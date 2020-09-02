@@ -1,0 +1,75 @@
+---
+title: "HW1"
+author: "Serena Li"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+##1.  Import class one survey data from our Github site (https://github.com/kijohnson/ADA-FAll-2020) (The dataset called ‘Class 1 Survey Fall 2020.csv’ is located in the class one folder), calling the R dataframe that you create C1survey. 
+
+```{r, echo=TRUE}
+#report csv dataset
+C1survey <- read.csv("https://raw.githubusercontent.com/kijohnson/ADA-FAll-2020/master/Class%20One/Class%201%20Survey%20Fall%202020.csv")
+```
+
+
+##2. Determine: a. the number of observations (i.e. the number of people who filled out the survey) and b. the number of variables in the dataframe.
+```{r}
+dim(C1survey)
+
+```
+##3. a. Rename the column variables to something shorter and that is descriptive of what the variable is about (for example like_dogs for the ‘Do you like dogs?’ question variable) and b. Display that they are renamed.
+```{r, }
+#change column name
+#install.packages("plyr")
+library(plyr)
+
+C1survey <- rename(C1survey,c("Do.you.like.cats."="catlover","Do.you.like.dogs."="doglover","What.is.your.birth.day..e.g..October.28.report.28.."="birthday", "What.is.your.birth.month..e.g..October.28.report.10.." ="birthmonth"))
+colnames(C1survey)
+```
+##4. Write code to determine and display the number of factor, integer, numerical, and character variables there are in the C1survey dataset.
+```{r,}
+
+sapply(C1survey, class)
+table(sapply(C1survey, class))
+```
+##5. a. Using code, check the bday and bmonth variables for any unusual or missing values. If you find any, b. describe what you will do with the unusual values in a comment before or immediately following the code that does it, and c. after you have cleaned up any unusual values, find the median bday and month. *Note: please make sure that your bday and month variables are numeric before doing statistics
+```{r}
+class(C1survey$birthday)
+class((C1survey$birthmonth))
+is.na(C1survey$birthday)
+is.na(C1survey$birthmonth)
+# covert character var to numeric var in order to remove the unusual observation
+C1survey$birthday_n <- as.numeric(C1survey$birthday)
+C1survey$birthmonth_n <- as.numeric(C1survey$birthmonth)
+
+#get mean 
+mean(C1survey$birthmonth_n,na.rm = T)
+mean(C1survey$birthday_n,na.rm = T)
+
+```
+##6. a. Create a new variable called bseason that gives the season according to Northern Meteorological season in which respondents were born (winter=12/1 to 2/29, spring=3/1 to 5/31, summer=6/1 to 8/31, fall=9/1 to 11/30). b. Using the table function, print a table of Seasons in the columns and bmonths in the rows that allows you to check that the coding is correct c. Sum the columns using the addmargins function to answer the question of how many classmates were born in each season? Include your answer in the code you turn in.
+```{r}
+C1survey$bseason[C1survey$birthmonth_n>=3 & C1survey$birthmonth_n<=5] <- "Spring"
+C1survey$bseason[C1survey$birthmonth_n>=6 & C1survey$birthmonth_n<=8] <- "Summer"
+C1survey$bseason[C1survey$birthmonth_n>=9 & C1survey$birthmonth_n<=11] <- "Fall"
+C1survey$bseason[C1survey$birthmonth_n %in% c(12,1,2)] <- "Winter"
+table(C1survey$birthmonth_n,C1survey$bseason)
+addmargins(A = table(C1survey$birthmonth_n,C1survey$bseason),
+)
+#fall= 10
+#spring=6
+#summer=7
+#winter=5
+
+```
+##Pick your favorite variable to analyze, come up with a question you want to answer with that variable, generate the code, and provide an answer to your question. Describe what you did using comments (i.e. #’s).
+```{r}
+#which season is most liked among classmates? 
+class(C1survey$What.is.your.favorite.Month.)
+table(C1survey$What.is.your.favorite.Month.)
+#both December and October are most selected favorite month
+```
+
